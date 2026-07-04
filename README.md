@@ -1,2 +1,4 @@
 # SprayLab
-Primarily Recoil control and future additional mechanical training for CS2 ane more
+Real-time mechanical training for CS2. Grades raw mouse inputs against ideal sprays. Recoil control training first, with counterstrafing and more to follow.
+
+`README.md draft TODO full readme later`
