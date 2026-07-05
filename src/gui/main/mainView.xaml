@@ -1,0 +1,14 @@
+<UserControl
+	x:Class="SprayLab.Main.MainView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:widgets="using:SprayLab.Widgets">
+	<Grid Background="#111114">
+		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Border CornerRadius="12" Background="#1D1D20" Width="500" Height="620">
+				<widgets:SprayGraph x:Name="graph" Margin="16" />
+			</Border>
+			<TextBlock Text="Last Spray" HorizontalAlignment="Center" Margin="0,12,0,0" FontSize="16" />
+		</StackPanel>
+	</Grid>
+</UserControl>

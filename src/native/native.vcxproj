@@ -48,11 +48,27 @@
 			<OptimizeReferences>true</OptimizeReferences>
 		</Link>
 	</ItemDefinitionGroup>
+	<ItemDefinitionGroup>
+		<Link>
+			<AdditionalDependencies>user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+		</Link>
+	</ItemDefinitionGroup>
 	<ItemGroup>
 		<ClCompile Include="abi\abi.cpp" />
+		<ClCompile Include="assets\weaponRef.cpp" />
+		<ClCompile Include="winapi\capture.cpp" />
+		<ClCompile Include="winapi\rawInput.cpp" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="abi\abi.h" />
+		<ClInclude Include="assets\weaponRef.h" />
+		<ClInclude Include="logic\bullet.h" />
+		<ClInclude Include="logic\delta.h" />
+		<ClInclude Include="logic\spray.h" />
+		<ClInclude Include="pos.h" />
+		<ClInclude Include="weapon.h" />
+		<ClInclude Include="winapi\capture.h" />
+		<ClInclude Include="winapi\rawInput.h" />
 	</ItemGroup>
 	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>
