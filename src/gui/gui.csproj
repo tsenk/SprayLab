@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+		<TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+		<AssemblyName>SprayLab</AssemblyName>
+		<RootNamespace>SprayLab</RootNamespace>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<Platforms>x64</Platforms>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<UseWinUI>true</UseWinUI>
+		<WindowsPackageType>None</WindowsPackageType>
+		<ProjectPriFileName>resources.pri</ProjectPriFileName>
+		<WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<!-- dotnet cli lacks the appx pri tasks, borrow them from the vs install, override with /p:AppxMSBuildToolsPath on exotic setups -->
+		<vsAppxDir Condition="'$(vsAppxDir)'=='' and Exists('C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\')">C:\Program Files\Microsoft Visual Studio\18\Enterprise\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\</vsAppxDir>
+		<vsAppxDir Condition="'$(vsAppxDir)'=='' and Exists('C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\')">C:\Program Files\Microsoft Visual Studio\18\Professional\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\</vsAppxDir>
+		<vsAppxDir Condition="'$(vsAppxDir)'=='' and Exists('C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\')">C:\Program Files\Microsoft Visual Studio\18\Community\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\</vsAppxDir>
+		<vsAppxDir Condition="'$(vsAppxDir)'=='' and Exists('C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\')">C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Microsoft\VisualStudio\v18.0\AppxPackage\</vsAppxDir>
+		<AppxMSBuildToolsPath Condition="'$(vsAppxDir)'!=''">$(vsAppxDir)</AppxMSBuildToolsPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.260224002" />
+		<PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.28000.2270" />
+	</ItemGroup>
+	<Target Name="buildNative" BeforeTargets="BeforeBuild">
+		<Exec Command="&quot;%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe&quot; -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find Common7\Tools\VsDevCmd.bat" ConsoleToMSBuild="true" StandardOutputImportance="low">
+			<Output TaskParameter="ConsoleOutput" PropertyName="vsDevCmd" />
+		</Exec>
+		<Exec Command="call &quot;$(vsDevCmd)&quot; -arch=amd64 -startdir=none -no_logo &amp;&amp; msbuild &quot;$(MSBuildProjectDirectory)\..\native\native.vcxproj&quot; /p:Configuration=$(Configuration) /p:Platform=x64 /nologo /v:m" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\build\native\$(Configuration)\slnative.dll" DestinationFolder="$(OutDir)" />
+	</Target>
+</Project>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<EnableDefaultItems>false</EnableDefaultItems>
+		<NoWarn>CS2008</NoWarn>
+	</PropertyGroup>
+	<Target Name="buildNativeTests" BeforeTargets="BeforeBuild">
+		<MakeDir Directories="$(MSBuildProjectDirectory)\..\..\build\obj\tests" />
+		<Exec Command="&quot;%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe&quot; -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find Common7\Tools\VsDevCmd.bat" ConsoleToMSBuild="true" StandardOutputImportance="low">
+			<Output TaskParameter="ConsoleOutput" PropertyName="vsDevCmd" />
+		</Exec>
+		<Exec Command="call &quot;$(vsDevCmd)&quot; -arch=amd64 -startdir=none -no_logo &amp;&amp; msbuild &quot;$(MSBuildProjectDirectory)\..\native\native.vcxproj&quot; /p:Configuration=$(Configuration) /p:Platform=x64 /nologo /v:m &amp;&amp; cl /nologo /std:c++latest /EHsc /W4 /MP /I&quot;$(MSBuildProjectDirectory)\..\native&quot; &quot;$(MSBuildProjectDirectory)\*.cpp&quot; /Fo&quot;$(MSBuildProjectDirectory)\..\..\build\obj\tests\\&quot; /Fe&quot;$(MSBuildProjectDirectory)\..\..\build\tests.exe&quot;" />
+		<Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\build\native\$(Configuration)\slnative.dll" DestinationFolder="$(MSBuildProjectDirectory)\..\..\build\" />
+	</Target>
+</Project>
