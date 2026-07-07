@@ -4,11 +4,86 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:widgets="using:SprayLab.Widgets">
 	<Grid Background="#111114">
-		<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-			<Border CornerRadius="12" Background="#1D1D20" Width="500" Height="620">
-				<widgets:SprayGraph x:Name="graph" Margin="16" />
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="300" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="Auto" />
+		</Grid.ColumnDefinitions>
+
+		<Grid Grid.Column="0" Background="#1B1B1E" Padding="16">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+
+			<Grid Grid.Row="0" Margin="0,0,0,16">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Mouse capture" FontSize="13" VerticalAlignment="Center" />
+				<ComboBox Grid.Column="1" x:Name="cmbCapture" Width="130" SelectionChanged="onCaptureChanged" />
+			</Grid>
+
+			<Grid Grid.Row="1" Margin="0,0,0,16">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Weapon" FontSize="13" VerticalAlignment="Center" />
+				<ComboBox Grid.Column="1" x:Name="cmbWeapon" Width="130" SelectionChanged="onWeaponChanged" />
+			</Grid>
+
+			<Grid Grid.Row="2" Margin="0,0,0,16">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Ignore mistake threshold (deg)" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="110" />
+				<NumberBox Grid.Column="1" x:Name="numThresh" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" VerticalAlignment="Center" />
+				<Button Grid.Column="2" x:Name="btnApply" Content="Apply" Margin="8,0,0,0" Style="{StaticResource AccentButtonStyle}" Click="onApply" VerticalAlignment="Center" />
+			</Grid>
+
+			<Grid Grid.Row="3" Margin="0,0,0,16">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="ING sensitivity" FontSize="13" VerticalAlignment="Center" />
+				<NumberBox Grid.Column="1" x:Name="numSens" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" ValueChanged="onSensChanged" />
+			</Grid>
+
+			<Grid Grid.Row="4" Margin="0,0,0,16">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="m_yaw" FontSize="13" VerticalAlignment="Center" />
+				<NumberBox Grid.Column="1" x:Name="numMYaw" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.001" ValueChanged="onMYawChanged" />
+			</Grid>
+
+			<TextBlock Grid.Row="5" x:Name="txtWarning" Text="Sprays are not recorded until in-game sensitivity, m_yaw and weapon are set." FontSize="12" Foreground="#FF9F0A" TextWrapping="Wrap" />
+		</Grid>
+
+		<Border Grid.Column="1" Background="#1D1D20" CornerRadius="12" Width="210" Margin="24,40" HorizontalAlignment="Center">
+			<widgets:MistakeList x:Name="mistakes" />
+		</Border>
+
+		<StackPanel Grid.Column="2" VerticalAlignment="Center" Margin="0,0,36,0">
+			<Border CornerRadius="12" Background="#1D1D20" Width="440" Height="560">
+				<widgets:SprayGraph x:Name="graph" Margin="12" />
 			</Border>
-			<TextBlock Text="Last Spray" HorizontalAlignment="Center" Margin="0,12,0,0" FontSize="16" />
+			<TextBlock Text="Last Spray" HorizontalAlignment="Center" Margin="0,10,0,4" FontSize="15" />
+			<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="28">
+				<TextBlock x:Name="txtDur" FontSize="13" />
+				<TextBlock x:Name="txtBullets" FontSize="13" />
+			</StackPanel>
 		</StackPanel>
 	</Grid>
 </UserControl>

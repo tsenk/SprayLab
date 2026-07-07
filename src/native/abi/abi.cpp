@@ -2,8 +2,11 @@
 
 #include "..\winapi\rawInput.h"
 #include "..\assets\weaponRef.h"
+#include "..\logic\analysis.h"
 
 static SprayCallback sprayCb = nullptr;
+static float sens = 0;
+static float mYaw = 0.022f;
 
 SL_API int slPing(void) {
 	return 1337;
@@ -21,27 +24,19 @@ SL_API int slSetWeapon(int weapon) {
 	return rawInputSetWeapon(Weapon(weapon)) ? 1 : 0;
 }
 
-SL_API int slWeaponRef(int weapon, int* shotIntv, Pos* pattern, int cap) {
-	const WeaponRef* wref = weaponRef(Weapon(weapon));
-	if (!wref)
-		return 0;
-
-	*shotIntv = wref->shotIntv;
-
-	int n = int(wref->pattern.size());
-	if (n>cap)
-		n = cap;
-
-	for (int i = 0; i<n; i++)
-		pattern[i] = wref->pattern[i];
-
-	return n;
+SL_API void slSetConversion(float s, float y) {
+	sens = s;
+	mYaw = y;
 }
 
 // fires on the capture thread, the callback must copy before returning
-void abiEmitSpray(const Spray& sp) {
+void abiEmitSpray(Spray& sp) {
 	if (!sprayCb)
 		return;
+
+	const WeaponRef* wref = weaponRef(sp.weapon);
+	if (wref)
+		grade(sp, *wref, sens, mYaw);
 
 	SlSpray flat;
 	flat.name = sp.name.c_str();

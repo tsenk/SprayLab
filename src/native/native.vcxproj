@@ -56,12 +56,14 @@
 	<ItemGroup>
 		<ClCompile Include="abi\abi.cpp" />
 		<ClCompile Include="assets\weaponRef.cpp" />
+		<ClCompile Include="logic\analysis.cpp" />
 		<ClCompile Include="winapi\capture.cpp" />
 		<ClCompile Include="winapi\rawInput.cpp" />
 	</ItemGroup>
 	<ItemGroup>
 		<ClInclude Include="abi\abi.h" />
 		<ClInclude Include="assets\weaponRef.h" />
+		<ClInclude Include="logic\analysis.h" />
 		<ClInclude Include="logic\bullet.h" />
 		<ClInclude Include="logic\delta.h" />
 		<ClInclude Include="logic\spray.h" />

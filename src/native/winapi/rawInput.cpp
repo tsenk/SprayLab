@@ -91,11 +91,11 @@ bool rawInputStart() {
 
 bool rawInputSetWeapon(Weapon w) {
 	const WeaponRef* wref = weaponRef(w);
-	if (!wref)
+	armed = wref!=nullptr;
+	if (!armed)
 		return false;
 
 	wpn = w;
 	intv = wref->shotIntv;
-	armed = true;
 	return true;
 }

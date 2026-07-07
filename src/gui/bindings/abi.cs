@@ -31,7 +31,7 @@ internal static class Abi {
 	internal static extern int slSetWeapon(int weapon);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
-	internal static extern int slWeaponRef(int weapon, ref int shotIntv, [Out] Pos[] pattern, int cap);
+	internal static extern void slSetConversion(float sens, float mYaw);
 
 	internal static Spray ReadSpray(IntPtr p) {
 		var flat = Marshal.PtrToStructure<SlSpray>(p);

@@ -24,6 +24,6 @@ SL_API int slPing(void);
 SL_API void slSetSprayCallback(SprayCallback cb);
 SL_API int slRegisterCapture(void);
 SL_API int slSetWeapon(int weapon);
-SL_API int slWeaponRef(int weapon, int* shotIntv, Pos* pattern, int cap);
+SL_API void slSetConversion(float sens, float mYaw);
 
-void abiEmitSpray(const Spray& sp);
+void abiEmitSpray(Spray& sp);

@@ -5,7 +5,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<EnableDefaultItems>false</EnableDefaultItems>
 		<NoWarn>CS2008</NoWarn>
-		<testNativeSrc>"$(MSBuildProjectDirectory)\..\native\winapi\capture.cpp"</testNativeSrc>
+		<testNativeSrc>"$(MSBuildProjectDirectory)\..\native\winapi\capture.cpp" "$(MSBuildProjectDirectory)\..\native\logic\analysis.cpp" "$(MSBuildProjectDirectory)\..\native\assets\weaponRef.cpp"</testNativeSrc>
 	</PropertyGroup>
 	<Target Name="buildNativeTests" BeforeTargets="BeforeBuild">
 		<MakeDir Directories="$(MSBuildProjectDirectory)\..\..\build\obj\tests" />

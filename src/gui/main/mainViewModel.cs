@@ -4,6 +4,12 @@ using SprayLab.Bindings;
 namespace SprayLab.Main;
 
 public class MainViewModel : INotifyPropertyChanged {
+	public float Sens = float.NaN;
+	public float MYaw = 0.022f;
+	public Weapon SelectedWeapon = Weapon.Ak47;
+	public int CaptureMode;
+	public float Thresh = 1.0f;
+
 	Spray? lastSpray;
 
 	public Spray? LastSpray {
