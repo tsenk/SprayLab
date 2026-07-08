@@ -22,8 +22,11 @@ typedef void(__cdecl* SprayCallback)(const SlSpray* sp);
 
 SL_API int slPing(void);
 SL_API void slSetSprayCallback(SprayCallback cb);
+SL_API int slInit(void);
 SL_API int slRegisterCapture(void);
 SL_API int slSetWeapon(int weapon);
 SL_API void slSetConversion(float sens, float mYaw);
+SL_API void slSetCaptureMode(int reqRmb);
+SL_API int slDeleteSpray(const char* name);
 
-void abiEmitSpray(Spray& sp);
+void abiCaptureDone(Spray& sp);

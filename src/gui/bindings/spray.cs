@@ -10,7 +10,9 @@ public struct Pos {
 	public float Y;
 }
 
-public struct Bullet {
+// class so ref rehydration mutation sticks
+[System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+public class Bullet {
 	public int Num;
 	public Pos Actual;
 	public Pos Ref;

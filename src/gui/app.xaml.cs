@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using SprayLab.Bindings;
+using SprayLab.Config;
 
 namespace SprayLab;
 
@@ -9,6 +10,9 @@ public partial class App : Application {
 	Window? window;
 
 	public App() {
+		CfgStore.Load();
+		RequestedTheme = CfgStore.Cur.ClrScheme==ClrScheme.Light ? ApplicationTheme.Light : ApplicationTheme.Dark;
+
 		InitializeComponent();
 	}
 

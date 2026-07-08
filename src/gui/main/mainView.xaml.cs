@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using SprayLab.Bindings;
+using SprayLab.Config;
 using SprayLab.Viewer;
 
 namespace SprayLab.Main;
@@ -16,16 +17,22 @@ public sealed partial class MainView : UserControl {
 	public MainView() {
 		InitializeComponent();
 
+		Cfg cfg = CfgStore.Cur;
+		vm.Sens = cfg.Sens ?? float.NaN;
+		vm.MYaw = cfg.MYaw;
+		vm.CaptureMode = (int)cfg.CaptureMode;
+
 		cmbCapture.ItemsSource = new[] { "LMB", "LMB+RMB (Combined)" };
-		cmbCapture.SelectedIndex = 0;
+		cmbCapture.SelectedIndex = vm.CaptureMode;
 		cmbWeapon.ItemsSource = WEAPON_NAMES;
 		cmbWeapon.SelectedIndex = 0;
-		numMYaw.Value = 0.022;
+		numMYaw.Value = Math.Round(vm.MYaw, 6);
 		numThresh.Value = vm.Thresh;
-		numSens.Value = double.NaN;
+		numSens.Value = float.IsNaN(vm.Sens) ? double.NaN : Math.Round(vm.Sens, 6);
 
 		vm.PropertyChanged += (s, e) => onSprayChanged();
 
+		Abi.slSetCaptureMode(vm.CaptureMode);
 		arm();
 	}
 
@@ -75,12 +82,16 @@ public sealed partial class MainView : UserControl {
 
 	void onSensChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) {
 		vm.Sens = (float)sender.Value;
+		CfgStore.Cur.Sens = float.IsNaN(vm.Sens) ? null : vm.Sens;
+		CfgStore.Save();
 
 		arm();
 	}
 
 	void onMYawChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) {
 		vm.MYaw = (float)sender.Value;
+		CfgStore.Cur.MYaw = vm.MYaw;
+		CfgStore.Save();
 
 		arm();
 	}
@@ -93,5 +104,9 @@ public sealed partial class MainView : UserControl {
 
 	void onCaptureChanged(object sender, SelectionChangedEventArgs e) {
 		vm.CaptureMode = cmbCapture.SelectedIndex;
+		CfgStore.Cur.CaptureMode = (CaptureMode)vm.CaptureMode;
+		CfgStore.Save();
+
+		Abi.slSetCaptureMode(vm.CaptureMode);
 	}
 }

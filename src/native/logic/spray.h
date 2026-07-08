@@ -17,3 +17,9 @@ struct Spray {
 	std::vector<Bullet> bullets;
 	std::vector<Delta> deltas;
 };
+
+const char* weaponId(Weapon wpn);
+const char* weaponDisplay(Weapon wpn);
+bool weaponFromId(const std::string& id, Weapon& out);
+std::string sprayToJson(const Spray& sp);
+bool sprayFromJson(const std::string& text, Spray& out);

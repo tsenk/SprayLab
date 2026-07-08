@@ -12,6 +12,8 @@ static LARGE_INTEGER qpcBase;
 static Weapon wpn;
 static int intv = 0;
 static bool armed = false;
+static bool reqRmb = false;
+static bool rmbHeld = false;
 
 static uint64_t nowMs() {
 	LARGE_INTEGER now;
@@ -32,7 +34,12 @@ static LRESULT CALLBACK wndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	const RAWMOUSE& m = ri.data.mouse;
 	uint64_t t = nowMs();
 
-	if (armed && (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_DOWN))
+	if (m.usButtonFlags&RI_MOUSE_RIGHT_BUTTON_DOWN)
+		rmbHeld = true;
+	if (m.usButtonFlags&RI_MOUSE_RIGHT_BUTTON_UP)
+		rmbHeld = false;
+
+	if (armed && (!reqRmb || rmbHeld) && (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_DOWN))
 		captureBegin(wpn, intv, t);
 
 	if ((m.usFlags&MOUSE_MOVE_ABSOLUTE)==0 && (m.lLastX!=0 || m.lLastY!=0))
@@ -41,7 +48,7 @@ static LRESULT CALLBACK wndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	if (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_UP) {
 		Spray sp;
 		if (captureEnd(t, sp))
-			abiEmitSpray(sp);
+			abiCaptureDone(sp);
 	}
 
 	return 0;
@@ -87,6 +94,10 @@ bool rawInputStart() {
 
 	thread = CreateThread(nullptr, 0, captureLoop, nullptr, 0, nullptr);
 	return thread!=nullptr;
+}
+
+void rawInputSetReqRmb(bool req) {
+	reqRmb = req;
 }
 
 bool rawInputSetWeapon(Weapon w) {

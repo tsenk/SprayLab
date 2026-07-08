@@ -25,7 +25,16 @@ internal static class Abi {
 	internal static extern void slSetSprayCallback(SprayCallback cb);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int slInit();
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slRegisterCapture();
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern void slSetCaptureMode(int reqRmb);
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int slDeleteSpray([MarshalAs(UnmanagedType.LPStr)] string name);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slSetWeapon(int weapon);
@@ -45,7 +54,7 @@ internal static class Abi {
 
 		int bulletSize = Marshal.SizeOf<Bullet>();
 		for (int i = 0; i<flat.BulletC; i++)
-			sp.Bullets.Add(Marshal.PtrToStructure<Bullet>(IntPtr.Add(flat.Bullets, i*bulletSize)));
+			sp.Bullets.Add(Marshal.PtrToStructure<Bullet>(IntPtr.Add(flat.Bullets, i*bulletSize))!);
 
 		int deltaSize = Marshal.SizeOf<Delta>();
 		for (int i = 0; i<flat.DeltaC; i++)

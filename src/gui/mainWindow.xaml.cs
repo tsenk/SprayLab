@@ -8,6 +8,9 @@ public sealed partial class MainWindow : Window {
 	// rooted so the native side never calls a collected delegate
 	static Abi.SprayCallback? keepCb;
 
+	readonly List<Spray> sprays = new();
+	bool loading = true;
+
 	[DllImport("user32.dll")]
 	static extern uint GetDpiForWindow(IntPtr hwnd);
 
@@ -21,12 +24,28 @@ public sealed partial class MainWindow : Window {
 
 		keepCb = onSpray;
 		Abi.slSetSprayCallback(keepCb);
+
+		Abi.slInit();
+		loading = false;
+
+		if (sprays.Count>0)
+			mainView.ShowSpray(sprays[^1]);
+
 		Abi.slRegisterCapture();
 	}
 
 	void onSpray(IntPtr spray) {
 		Spray sp = Abi.ReadSpray(spray);
 
-		DispatcherQueue.TryEnqueue(() => mainView.ShowSpray(sp));
+		// load path runs synchronously on the ui thread, live captures come from the capture thread
+		if (loading) {
+			sprays.Add(sp);
+			return;
+		}
+
+		DispatcherQueue.TryEnqueue(() => {
+			sprays.Add(sp);
+			mainView.ShowSpray(sp);
+		});
 	}
 }
