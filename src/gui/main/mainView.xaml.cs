@@ -14,6 +14,8 @@ public sealed partial class MainView : UserControl {
 
 	readonly MainViewModel vm = new();
 
+	public event Action? GalleryRequested;
+
 	public MainView() {
 		InitializeComponent();
 
@@ -100,6 +102,10 @@ public sealed partial class MainView : UserControl {
 		vm.SelectedWeapon = (Weapon)cmbWeapon.SelectedIndex;
 
 		arm();
+	}
+
+	void onGallery(object sender, RoutedEventArgs e) {
+		GalleryRequested?.Invoke();
 	}
 
 	void onCaptureChanged(object sender, SelectionChangedEventArgs e) {

@@ -33,6 +33,17 @@ public sealed partial class SprayGraph : UserControl {
 		if (w<=0 || h<=0 || bullets.Count==0)
 			return;
 
+		byte[] png = RenderPng(bullets, flagged, w, h, DOT_R);
+
+		using var ms = new MemoryStream(png);
+		var bmp = new BitmapImage();
+		bmp.SetSource(ms.AsRandomAccessStream());
+
+		img.Source = bmp;
+	}
+
+	// pure model build and export, safe off the ui thread, thumbnails pass dotR 3 and no mistakes
+	public static byte[] RenderPng(IReadOnlyList<Bullet> bullets, IReadOnlyList<Delta> flagged, int w, int h, int dotR) {
 		float xMin = float.MaxValue;
 		float xMax = float.MinValue;
 		float yMin = float.MaxValue;
@@ -65,7 +76,7 @@ public sealed partial class SprayGraph : UserControl {
 
 			float dxPx = (b.Actual.X-b.Ref.X)*scaleX;
 			float dyPx = (b.Actual.Y-b.Ref.Y)*scaleY;
-			if (MathF.Sqrt(dxPx*dxPx+dyPx*dyPx)>2*DOT_R) {
+			if (MathF.Sqrt(dxPx*dxPx+dyPx*dyPx)>2*dotR) {
 				var line = new LineSeries { Color = OxyColor.FromRgb(0xE5, 0x3E, 0x3E), StrokeThickness = 1.5 };
 				line.Points.Add(new DataPoint(b.Actual.X, b.Actual.Y));
 				line.Points.Add(new DataPoint(b.Ref.X, b.Ref.Y));
@@ -82,8 +93,8 @@ public sealed partial class SprayGraph : UserControl {
 			shownNum++;
 		}
 
-		var refSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = DOT_R, MarkerFill = OxyColor.FromRgb(0x34, 0xC7, 0x59) };
-		var actualSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = DOT_R, MarkerFill = OxyColor.FromRgb(0x29, 0x62, 0xFF) };
+		var refSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = dotR, MarkerFill = OxyColor.FromRgb(0x34, 0xC7, 0x59) };
+		var actualSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = dotR, MarkerFill = OxyColor.FromRgb(0x29, 0x62, 0xFF) };
 		foreach (Bullet b in bullets) {
 			refSeries.Points.Add(new ScatterPoint(b.Ref.X, b.Ref.Y));
 			actualSeries.Points.Add(new ScatterPoint(b.Actual.X, b.Actual.Y));
@@ -95,11 +106,7 @@ public sealed partial class SprayGraph : UserControl {
 		var exporter = new OxyPlot.SkiaSharp.PngExporter { Width = w, Height = h };
 		using var ms = new MemoryStream();
 		exporter.Export(model, ms);
-		ms.Position = 0;
 
-		var bmp = new BitmapImage();
-		bmp.SetSource(ms.AsRandomAccessStream());
-
-		img.Source = bmp;
+		return ms.ToArray();
 	}
 }
