@@ -27,10 +27,34 @@ public class GalleryViewModel {
 	public ObservableCollection<DayGroup> Days { get; } = new();
 
 	public event Action<Spray>? OpenRequested;
+	public event Action<SprayCard>? DeleteRequested;
+	public event Action<SprayCard, string>? RenameRequested;
+
+	public List<SprayCard> CheckedCards() {
+		var list = new List<SprayCard>();
+
+		foreach (DayGroup g in Days)
+			list.AddRange(g.Cards.Where(c => c.Checked));
+
+		return list;
+	}
+
+	public void RemoveCard(SprayCard card) {
+		foreach (DayGroup g in Days) {
+			if (!g.Cards.Remove(card))
+				continue;
+
+			if (g.Cards.Count==0)
+				Days.Remove(g);
+			return;
+		}
+	}
 
 	public void AddCard(Spray sp, byte[] thumbPng) {
 		var card = new SprayCard(sp, thumbPng);
 		card.OpenRequested += s => OpenRequested?.Invoke(s);
+		card.DeleteRequested += c => DeleteRequested?.Invoke(c);
+		card.RenameRequested += (c, name) => RenameRequested?.Invoke(c, name);
 
 		DateTime day = DateTimeOffset.FromUnixTimeSeconds(sp.Epoch).ToLocalTime().Date;
 

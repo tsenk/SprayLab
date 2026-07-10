@@ -5,6 +5,7 @@
 #include <fstream>
 
 #include "persistence\store.h"
+#include "persistence\transfer.h"
 #include "logic\analysis.h"
 #include "fixtures.h"
 
@@ -98,6 +99,60 @@ TEST_CASE("delete removes the file and the entry") {
 
 	REQUIRE(storeLoadAll());
 	CHECK(storeSprays().empty());
+}
+
+TEST_CASE("rename dedups collisions and rejects illegal chars") {
+	resetDir();
+
+	const WeaponRef* wref = weaponRef(Weapon::ak47);
+	Spray a = perfectSpray(*wref, 1.0f, 0.022f);
+	Spray b = perfectSpray(*wref, 1.0f, 0.022f);
+	a.name = "first";
+	b.name = "second";
+	REQUIRE(storeSave(a));
+	REQUIRE(storeSave(b));
+
+	std::string final;
+	REQUIRE(storeRename("second", "first", final));
+	CHECK(final=="first 2");
+	CHECK(fs::exists(fs::path(testDir())/"first 2.spray"));
+	CHECK(!fs::exists(fs::path(testDir())/"second.spray"));
+
+	REQUIRE(storeRename("first 2", "a:b*c", final));
+	CHECK(final=="abc");
+
+	CHECK(!storeRename("missing", "x", final));
+	CHECK(!storeRename("first", "\\/:", final));
+}
+
+TEST_CASE("import copies external files in with collision dedup") {
+	resetDir();
+
+	const WeaponRef* wref = weaponRef(Weapon::ak47);
+	Spray sp = perfectSpray(*wref, 1.0f, 0.022f);
+	grade(sp, *wref, 1.0f, 0.022f);
+
+	fs::path external = fs::path(testDir())/"external";
+	fs::create_directories(external);
+	std::ofstream out(external/"from other pc.spray");
+	out << sprayToJson(sp);
+	out.close();
+
+	std::wstring src = (external/"from other pc.spray").wstring();
+	REQUIRE(transferImport(src));
+	CHECK(fs::exists(fs::path(testDir())/"from other pc.spray"));
+	CHECK(storeSprays().back().name=="from other pc");
+
+	const Spray& imported = storeSprays().back();
+	CHECK(imported.bullets[1].ref.x==wref->pattern[1].x);
+
+	REQUIRE(transferImport(src));
+	CHECK(fs::exists(fs::path(testDir())/"from other pc 2.spray"));
+
+	std::ofstream bad(external/"junk.spray");
+	bad << "nope";
+	bad.close();
+	CHECK(!transferImport((external/"junk.spray").wstring()));
 }
 
 TEST_CASE("load all skips corrupt files and sorts by epoch") {

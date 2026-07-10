@@ -59,6 +59,7 @@
 		<ClCompile Include="logic\analysis.cpp" />
 		<ClCompile Include="logic\spray.cpp" />
 		<ClCompile Include="persistence\store.cpp" />
+		<ClCompile Include="persistence\transfer.cpp" />
 		<ClCompile Include="winapi\capture.cpp" />
 		<ClCompile Include="winapi\rawInput.cpp" />
 	</ItemGroup>
@@ -70,6 +71,7 @@
 		<ClInclude Include="logic\delta.h" />
 		<ClInclude Include="logic\spray.h" />
 		<ClInclude Include="persistence\store.h" />
+		<ClInclude Include="persistence\transfer.h" />
 		<ClInclude Include="pos.h" />
 		<ClInclude Include="vendor\json.hpp" />
 		<ClInclude Include="weapon.h" />

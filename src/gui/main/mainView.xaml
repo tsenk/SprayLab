@@ -71,6 +71,7 @@
 			<TextBlock Grid.Row="5" x:Name="txtWarning" Text="Sprays are not recorded until in-game sensitivity, m_yaw and weapon are set." FontSize="12" Foreground="#FF9F0A" TextWrapping="Wrap" />
 
 			<StackPanel Grid.Row="6" Orientation="Horizontal" VerticalAlignment="Bottom" Spacing="10">
+				<Button x:Name="btnImport" Content="Import" Background="White" Foreground="Black" Click="onImport" />
 				<Button x:Name="btnGallery" Content="Gallery" Style="{StaticResource AccentButtonStyle}" Click="onGallery" />
 			</StackPanel>
 		</Grid>

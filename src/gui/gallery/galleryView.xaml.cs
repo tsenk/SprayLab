@@ -9,6 +9,7 @@ public sealed partial class GalleryView : UserControl {
 
 	public event Action? BackRequested;
 	public event Action<Spray>? OpenRequested;
+	public event Action<List<Widgets.SprayCard>>? DeleteSelectedRequested;
 
 	public GalleryView() {
 		InitializeComponent();
@@ -19,5 +20,11 @@ public sealed partial class GalleryView : UserControl {
 
 	void onBack(object sender, RoutedEventArgs e) {
 		BackRequested?.Invoke();
+	}
+
+	void onDeleteSelected(object sender, RoutedEventArgs e) {
+		var checkedCards = Vm.CheckedCards();
+		if (checkedCards.Count>0)
+			DeleteSelectedRequested?.Invoke(checkedCards);
 	}
 }

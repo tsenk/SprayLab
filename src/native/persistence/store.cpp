@@ -91,6 +91,41 @@ bool storeSave(Spray& sp) {
 	return true;
 }
 
+bool storeRename(const std::string& oldName, const std::string& newName, std::string& outFinal) {
+	std::string clean;
+	for (char c : newName) {
+		if (std::string("\\/:*?\"<>|").find(c)==std::string::npos)
+			clean += c;
+	}
+
+	if (clean.empty() || !fs::exists(sprayPath(oldName)))
+		return false;
+
+	if (clean==oldName) {
+		outFinal = oldName;
+		return true;
+	}
+
+	std::string final = clean;
+	for (int n = 2; fs::exists(sprayPath(final)); n++)
+		final = clean+" "+std::to_string(n);
+
+	std::error_code ec;
+	fs::rename(sprayPath(oldName), sprayPath(final), ec);
+	if (ec)
+		return false;
+
+	for (Spray& sp : sprays) {
+		if (sp.name==oldName) {
+			sp.name = final;
+			break;
+		}
+	}
+
+	outFinal = final;
+	return true;
+}
+
 bool storeDelete(const std::string& name) {
 	std::error_code ec;
 	if (!fs::remove(sprayPath(name), ec))

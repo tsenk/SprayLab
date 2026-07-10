@@ -4,6 +4,9 @@
 #include "..\assets\weaponRef.h"
 #include "..\logic\analysis.h"
 #include "..\persistence\store.h"
+#include "..\persistence\transfer.h"
+
+#include <cstring>
 
 static SprayCallback sprayCb = nullptr;
 static float sens = 0;
@@ -63,6 +66,26 @@ SL_API void slSetCaptureMode(int reqRmb) {
 
 SL_API int slDeleteSpray(const char* name) {
 	return storeDelete(name) ? 1 : 0;
+}
+
+SL_API int slRenameSpray(const char* oldName, const char* newName, char* outFinal, int cap) {
+	std::string final;
+	if (!storeRename(oldName, newName, final))
+		return 0;
+
+	if (int(final.size())+1>cap)
+		return 0;
+
+	memcpy(outFinal, final.c_str(), final.size()+1);
+	return 1;
+}
+
+SL_API int slImportSpray(const wchar_t* path) {
+	if (!transferImport(path))
+		return 0;
+
+	emit(storeSprays().back());
+	return 1;
 }
 
 // fires on the capture thread, the callback must copy before returning

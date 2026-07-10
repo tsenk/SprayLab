@@ -15,6 +15,7 @@ public sealed partial class MainView : UserControl {
 	readonly MainViewModel vm = new();
 
 	public event Action? GalleryRequested;
+	public event Action? ImportRequested;
 
 	public MainView() {
 		InitializeComponent();
@@ -106,6 +107,10 @@ public sealed partial class MainView : UserControl {
 
 	void onGallery(object sender, RoutedEventArgs e) {
 		GalleryRequested?.Invoke();
+	}
+
+	void onImport(object sender, RoutedEventArgs e) {
+		ImportRequested?.Invoke();
 	}
 
 	void onCaptureChanged(object sender, SelectionChangedEventArgs e) {

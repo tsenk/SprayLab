@@ -36,6 +36,12 @@ internal static class Abi {
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slDeleteSpray([MarshalAs(UnmanagedType.LPStr)] string name);
 
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+	internal static extern int slRenameSpray(string oldName, string newName, System.Text.StringBuilder outFinal, int cap);
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int slImportSpray([MarshalAs(UnmanagedType.LPWStr)] string path);
+
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slSetWeapon(int weapon);
 
