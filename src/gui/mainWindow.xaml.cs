@@ -59,18 +59,52 @@ public sealed partial class MainWindow : Window {
 		double scale = GetDpiForWindow(hwnd)/96.0;
 		AppWindow.ResizeClient(new Windows.Graphics.SizeInt32((int)(1100*scale), (int)(700*scale)));
 
-		mainView.GalleryRequested += () => showGallery(true);
+		mainView.GalleryRequested += () => showView(galleryView);
 		mainView.ImportRequested += importSprays;
-		galleryView.BackRequested += () => showGallery(false);
+		galleryView.BackRequested += () => showView(mainView);
 		galleryView.OpenRequested += sp => {
-			mainView.ShowSpray(sp);
-			showGallery(false);
+			viewerView.Show(sp);
+			showView(viewerView);
 		};
 		galleryView.Vm.DeleteRequested += deleteSpray;
 		galleryView.Vm.RenameRequested += renameSpray;
 		galleryView.DeleteSelectedRequested += cards => {
 			foreach (SprayCard card in cards)
 				deleteSpray(card);
+		};
+		viewerView.BackRequested += () => showView(galleryView);
+		viewerView.RenameRequested += (sp, wanted) => {
+			SprayCard? card = galleryView.Vm.CardOf(sp);
+			if (card!=null)
+				renameSpray(card, wanted);
+
+			viewerView.ApplyName(sp.Name);
+		};
+		viewerView.DeleteRequested += sp => {
+			List<Spray> order = galleryView.Vm.FlatSprays();
+			int at = order.IndexOf(sp);
+
+			SprayCard? card = galleryView.Vm.CardOf(sp);
+			if (card!=null)
+				deleteSpray(card);
+
+			order.Remove(sp);
+			if (order.Count==0) {
+				showView(galleryView);
+				return;
+			}
+
+			viewerView.Show(order[at<order.Count ? at : order.Count-1]);
+		};
+		viewerView.StepRequested += dir => {
+			if (viewerView.Current==null)
+				return;
+
+			List<Spray> order = galleryView.Vm.FlatSprays();
+			int at = order.IndexOf(viewerView.Current)+dir;
+
+			if (at>=0 && at<order.Count)
+				viewerView.Show(order[at]);
 		};
 
 		keepCb = onSpray;
@@ -87,12 +121,13 @@ public sealed partial class MainWindow : Window {
 		Abi.slRegisterCapture();
 	}
 
-	void showGallery(bool open) {
-		if (open)
+	void showView(UIElement view) {
+		if (view==galleryView)
 			galleryView.Vm.RefreshTitles();
 
-		mainView.Visibility = open ? Visibility.Collapsed : Visibility.Visible;
-		galleryView.Visibility = open ? Visibility.Visible : Visibility.Collapsed;
+		mainView.Visibility = view==mainView ? Visibility.Visible : Visibility.Collapsed;
+		galleryView.Visibility = view==galleryView ? Visibility.Visible : Visibility.Collapsed;
+		viewerView.Visibility = view==viewerView ? Visibility.Visible : Visibility.Collapsed;
 	}
 
 	void deleteSpray(SprayCard card) {

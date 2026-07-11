@@ -42,10 +42,14 @@ public sealed partial class SprayCard : UserControl {
 
 	void onNameKey(object sender, KeyRoutedEventArgs e) {
 		if (e.Key==VirtualKey.Enter)
-			Focus(FocusState.Programmatic);
+			commitName();
 	}
 
 	void onNameCommit(object sender, RoutedEventArgs e) {
+		commitName();
+	}
+
+	void commitName() {
 		string wanted = txtName.Text.Trim();
 
 		if (wanted.Length==0 || wanted==Spray.Name) {

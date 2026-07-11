@@ -4,9 +4,11 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:main="using:SprayLab.Main"
 	xmlns:gallery="using:SprayLab.Gallery"
+	xmlns:viewer="using:SprayLab.Viewer"
 	Title="SprayLab">
 	<Grid>
 		<main:MainView x:Name="mainView" />
 		<gallery:GalleryView x:Name="galleryView" Visibility="Collapsed" />
+		<viewer:ViewerView x:Name="viewerView" Visibility="Collapsed" />
 	</Grid>
 </Window>

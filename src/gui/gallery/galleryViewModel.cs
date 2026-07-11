@@ -30,6 +30,25 @@ public class GalleryViewModel {
 	public event Action<SprayCard>? DeleteRequested;
 	public event Action<SprayCard, string>? RenameRequested;
 
+	public SprayCard? CardOf(Spray sp) {
+		foreach (DayGroup g in Days) {
+			SprayCard? card = g.Cards.FirstOrDefault(c => c.Spray==sp);
+			if (card!=null)
+				return card;
+		}
+
+		return null;
+	}
+
+	public List<Spray> FlatSprays() {
+		var list = new List<Spray>();
+
+		foreach (DayGroup g in Days)
+			list.AddRange(g.Cards.Select(c => c.Spray));
+
+		return list;
+	}
+
 	public List<SprayCard> CheckedCards() {
 		var list = new List<SprayCard>();
 
