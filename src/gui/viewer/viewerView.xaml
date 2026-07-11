@@ -9,8 +9,28 @@
 			<ColumnDefinition Width="*" />
 		</Grid.ColumnDefinitions>
 
-		<!-- current period average lands here in iter08 -->
-		<Grid Grid.Column="0" Background="#1B1B1E" />
+		<Grid Grid.Column="0" Background="#1B1B1E" Padding="16">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
+			</Grid.RowDefinitions>
+
+			<TextBlock Grid.Row="0" Text="Current Period Spray Average" FontSize="13" HorizontalAlignment="Center" Margin="0,6,0,12" />
+
+			<Border Grid.Row="1" Background="#242427" CornerRadius="10">
+				<widgets:SprayGraph x:Name="avgGraph" Margin="10" />
+			</Border>
+
+			<Grid Grid.Row="2" Margin="0,12,0,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="Auto" />
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Latest Sprays for comparison" FontSize="12" VerticalAlignment="Center" />
+				<NumberBox Grid.Column="1" x:Name="numRecent" Width="90" SpinButtonPlacementMode="Compact" Minimum="1" SmallChange="1" ValueChanged="onRecentChanged" />
+			</Grid>
+		</Grid>
 
 		<Grid Grid.Column="1">
 			<Grid.RowDefinitions>

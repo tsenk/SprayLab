@@ -62,6 +62,67 @@ TEST_CASE("holds past the pattern clamp ref to the last entry") {
 	CHECK(sp.bullets[patternC+2].ref.y==wref->pattern[patternC-1].y);
 }
 
+TEST_CASE("period average means the last n sprays per bullet") {
+	const WeaponRef* wref = weaponRef(Weapon::ak47);
+
+	std::vector<Spray> sprays;
+	for (int s = 0; s<3; s++) {
+		Spray sp;
+		sp.weapon = Weapon::ak47;
+		sp.epoch = 1000+s;
+		for (int i = 0; i<5; i++)
+			sp.bullets.push_back({i, {float(s+1), float((s+1)*2)}, {0, 0}});
+
+		sprays.push_back(sp);
+	}
+
+	std::vector<Bullet> avg = periodAvg(sprays, Weapon::ak47, 2, *wref);
+	REQUIRE(int(avg.size())==int(wref->pattern.size()));
+
+	// last two sprays hold 2 and 3, mean 2.5
+	CHECK(avg[0].actual.x==doctest::Approx(2.5f));
+	CHECK(avg[0].actual.y==doctest::Approx(5.0f));
+	CHECK(avg[0].ref.x==wref->pattern[0].x);
+
+	// bullets past the sprays keep zero actual but carry ref
+	CHECK(avg[10].actual.x==0);
+	CHECK(avg[10].ref.y==wref->pattern[10].y);
+}
+
+TEST_CASE("period average with fewer than n uses what exists") {
+	const WeaponRef* wref = weaponRef(Weapon::ak47);
+
+	std::vector<Spray> sprays;
+	Spray sp;
+	sp.weapon = Weapon::ak47;
+	sp.bullets.push_back({0, {4, 8}, {0, 0}});
+	sprays.push_back(sp);
+
+	std::vector<Bullet> avg = periodAvg(sprays, Weapon::ak47, 10, *wref);
+	REQUIRE(!avg.empty());
+	CHECK(avg[0].actual.x==doctest::Approx(4.0f));
+}
+
+TEST_CASE("period average filters by weapon and empties without matches") {
+	const WeaponRef* wref = weaponRef(Weapon::ak47);
+
+	std::vector<Spray> sprays;
+	Spray ak;
+	ak.weapon = Weapon::ak47;
+	ak.bullets.push_back({0, {6, 6}, {0, 0}});
+	Spray mp9;
+	mp9.weapon = Weapon::mp9;
+	mp9.bullets.push_back({0, {100, 100}, {0, 0}});
+	sprays.push_back(ak);
+	sprays.push_back(mp9);
+
+	std::vector<Bullet> avg = periodAvg(sprays, Weapon::ak47, 5, *wref);
+	CHECK(avg[0].actual.x==doctest::Approx(6.0f));
+
+	std::vector<Bullet> none = periodAvg(sprays, Weapon::famas, 5, *wref);
+	CHECK(none.empty());
+}
+
 TEST_CASE("synthetic stream flows capture to grade as one spine") {
 	captureBegin(Weapon::ak47, 100, 0);
 	for (const MoveEvent& e : SYNTH_STREAM)

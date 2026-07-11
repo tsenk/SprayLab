@@ -88,6 +88,23 @@ SL_API int slImportSpray(const wchar_t* path) {
 	return 1;
 }
 
+SL_API int slPeriodAvg(int weapon, int n, Bullet* out, int cap) {
+	const WeaponRef* wref = weaponRef(Weapon(weapon));
+	if (!wref)
+		return 0;
+
+	std::vector<Bullet> avg = periodAvg(storeSprays(), Weapon(weapon), n, *wref);
+
+	int c = int(avg.size());
+	if (c>cap)
+		c = cap;
+
+	for (int i = 0; i<c; i++)
+		out[i] = avg[i];
+
+	return c;
+}
+
 // fires on the capture thread, the callback must copy before returning
 void abiCaptureDone(Spray& sp) {
 	const WeaponRef* wref = weaponRef(sp.weapon);

@@ -10,6 +10,9 @@ public sealed partial class ViewerView : UserControl {
 	Spray? current;
 	float thresh = 1.0f;
 
+	// comparison window, view state, resets per app run
+	int recentC = 10;
+
 	public Spray? Current => current;
 
 	public event Action? BackRequested;
@@ -21,6 +24,7 @@ public sealed partial class ViewerView : UserControl {
 		InitializeComponent();
 
 		numThresh.Value = thresh;
+		numRecent.Value = recentC;
 	}
 
 	public void Show(Spray sp) {
@@ -30,6 +34,30 @@ public sealed partial class ViewerView : UserControl {
 		txtBullets.Text = $"Bullets Fired: {sp.Bullets.Count}";
 
 		applyThreshold();
+		refreshAvg();
+	}
+
+	void refreshAvg() {
+		if (current==null)
+			return;
+
+		var buf = new Abi.SlBullet[64];
+		int c = Abi.slPeriodAvg((int)current.Weapon, recentC, buf, buf.Length);
+
+		var bullets = new List<Bullet>();
+		for (int i = 0; i<c; i++)
+			bullets.Add(new Bullet { Num = buf[i].Num, Actual = buf[i].Actual, Ref = buf[i].Ref });
+
+		avgGraph.Show(bullets, Array.Empty<Delta>());
+	}
+
+	void onRecentChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) {
+		if (double.IsNaN(sender.Value) || sender.Value<1)
+			return;
+
+		recentC = (int)sender.Value;
+
+		refreshAvg();
 	}
 
 	public void ApplyName(string name) {

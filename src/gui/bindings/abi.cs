@@ -7,6 +7,13 @@ internal static class Abi {
 	internal delegate void SprayCallback(IntPtr spray);
 
 	[StructLayout(LayoutKind.Sequential)]
+	internal struct SlBullet {
+		public int Num;
+		public Pos Actual;
+		public Pos Ref;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
 	struct SlSpray {
 		public IntPtr Name;
 		public int Weapon;
@@ -41,6 +48,9 @@ internal static class Abi {
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slImportSpray([MarshalAs(UnmanagedType.LPWStr)] string path);
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int slPeriodAvg(int weapon, int n, [Out] SlBullet[] outAvg, int cap);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slSetWeapon(int weapon);

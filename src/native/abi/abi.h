@@ -30,5 +30,6 @@ SL_API void slSetCaptureMode(int reqRmb);
 SL_API int slDeleteSpray(const char* name);
 SL_API int slRenameSpray(const char* oldName, const char* newName, char* outFinal, int cap);
 SL_API int slImportSpray(const wchar_t* path);
+SL_API int slPeriodAvg(int weapon, int n, Bullet* out, int cap);
 
 void abiCaptureDone(Spray& sp);
