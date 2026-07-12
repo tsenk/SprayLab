@@ -35,4 +35,13 @@
 		<Exec Command="call &quot;$(vsDevCmd)&quot; -arch=amd64 -startdir=none -no_logo &amp;&amp; msbuild &quot;$(MSBuildProjectDirectory)\..\native\native.vcxproj&quot; /p:Configuration=$(Configuration) /p:Platform=x64 /nologo /v:m" />
 		<Copy SourceFiles="$(MSBuildProjectDirectory)\..\..\build\native\$(Configuration)\slnative.dll" DestinationFolder="$(OutDir)" />
 	</Target>
+	<!-- publish gathers only tracked items, the native dll and pri files are loose copies -->
+	<Target Name="publishNative" AfterTargets="ComputeFilesToPublish">
+		<ItemGroup>
+			<nativeAndPri Include="$(OutDir)slnative.dll;$(OutDir)resources.pri" />
+			<ResolvedFileToPublish Include="@(nativeAndPri)">
+				<RelativePath>%(Filename)%(Extension)</RelativePath>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>
 </Project>
