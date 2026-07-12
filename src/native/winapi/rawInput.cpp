@@ -39,8 +39,13 @@ static LRESULT CALLBACK wndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 	if (m.usButtonFlags&RI_MOUSE_RIGHT_BUTTON_UP)
 		rmbHeld = false;
 
-	if (armed && (!reqRmb || rmbHeld) && (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_DOWN))
-		captureBegin(wpn, intv, t);
+	if (armed && (!reqRmb || rmbHeld) && (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_DOWN)) {
+		// clicks inside our own gui are navigation, not sprays
+		DWORD fgPid = 0;
+		GetWindowThreadProcessId(GetForegroundWindow(), &fgPid);
+		if (fgPid!=GetCurrentProcessId())
+			captureBegin(wpn, intv, t);
+	}
 
 	if ((m.usFlags&MOUSE_MOVE_ABSOLUTE)==0 && (m.lLastX!=0 || m.lLastY!=0))
 		captureMove(m.lLastX, m.lLastY, t);
