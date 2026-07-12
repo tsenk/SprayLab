@@ -51,7 +51,7 @@ public sealed partial class ViewerView : UserControl {
 		if (current==null)
 			return;
 
-		var buf = new Abi.SlBullet[64];
+		var buf = new Abi.SlBullet[128];
 		int c = Abi.slPeriodAvg((int)current.Weapon, recentC, buf, buf.Length);
 
 		// pattern slots past the longest spray come back zero filled, they are not bullets

@@ -64,7 +64,7 @@ internal static class Abi {
 				return known;
 
 			int intv = 0;
-			var buf = new Pos[64];
+			var buf = new Pos[128];
 			int n = slWeaponRef((int)weapon, ref intv, buf, buf.Length);
 
 			var pattern = buf[..n];

@@ -62,6 +62,27 @@ TEST_CASE("holds past the pattern clamp ref to the last entry") {
 	CHECK(sp.bullets[patternC+2].ref.y==wref->pattern[patternC-1].y);
 }
 
+TEST_CASE("every weapon ships a sane reference table") {
+	// pattern length is the mag size, first bullet needs zero compensation
+	const int MAG[] = {30, 30, 20, 35, 25, 30, 30, 30, 30, 30, 30, 25, 50, 64, 12};
+	const int INTV[] = {100, 90, 100, 90, 90, 110, 100, 70, 75, 80, 80, 90, 70, 80, 100};
+
+	for (int w = 0; w<15; w++) {
+		const WeaponRef* wref = weaponRef(Weapon(w));
+		REQUIRE(wref);
+		CHECK(int(wref->pattern.size())==MAG[w]);
+		CHECK(wref->shotIntv==INTV[w]);
+		CHECK(wref->pattern[0].x==0.0f);
+		CHECK(wref->pattern[0].y==0.0f);
+
+		float peak = 0;
+		for (const Pos& p : wref->pattern)
+			peak = p.y>peak ? p.y : peak;
+		CHECK(peak>3.0f);
+		CHECK(peak<16.0f);
+	}
+}
+
 TEST_CASE("period average means the last n sprays per bullet") {
 	const WeaponRef* wref = weaponRef(Weapon::ak47);
 
