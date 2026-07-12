@@ -22,6 +22,10 @@ public sealed partial class MistakeList : UserControl {
 				Dev = $"X: {flagged[i].Value.X:0.00} Y: {flagged[i].Value.Y:0.00}",
 			});
 
+		// a clean spray should not look like a broken list
+		if (list.Count==0)
+			list.Add(new MistakeRow { Num = "", Dev = "None above threshold" });
+
 		rows.ItemsSource = list;
 	}
 }

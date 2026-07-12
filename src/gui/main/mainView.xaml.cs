@@ -30,9 +30,12 @@ public sealed partial class MainView : UserControl {
 		cmbWeapon.ItemsSource = WEAPON_NAMES;
 		cmbWeapon.SelectedIndex = 0;
 
-		Widgets.StepperFormat.Round(numThresh, 0.01);
-		Widgets.StepperFormat.Round(numSens, 0.001);
+		Widgets.StepperFormat.Round(numThresh, 0.000001);
+		Widgets.StepperFormat.Round(numSens, 0.000001);
 		Widgets.StepperFormat.Round(numMYaw, 0.000001);
+		Widgets.StepperFormat.CommitOnEnter(numThresh);
+		Widgets.StepperFormat.CommitOnEnter(numSens);
+		Widgets.StepperFormat.CommitOnEnter(numMYaw);
 
 		numMYaw.Value = Math.Round(vm.MYaw, 6);
 		numThresh.Value = vm.Thresh;

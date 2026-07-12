@@ -11,7 +11,7 @@
 
 		<StackPanel Grid.Row="0">
 			<TextBlock Text="Mistakes" FontSize="14" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,10,0,8" />
-			<Rectangle Height="1" Fill="#3A3A3E" Margin="12,0" />
+			<Rectangle Height="1" Fill="{ThemeResource hairline}" Margin="12,0" />
 		</StackPanel>
 
 		<ScrollViewer Grid.Row="1" Margin="12,8,12,10">

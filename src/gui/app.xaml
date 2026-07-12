@@ -7,6 +7,24 @@
 			<ResourceDictionary.MergedDictionaries>
 				<XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
 			</ResourceDictionary.MergedDictionaries>
+			<ResourceDictionary.ThemeDictionaries>
+				<ResourceDictionary x:Key="Dark">
+					<SolidColorBrush x:Key="pageBg" Color="#111114" />
+					<SolidColorBrush x:Key="panelBg" Color="#1B1B1E" />
+					<SolidColorBrush x:Key="cardBg" Color="#1D1D20" />
+					<SolidColorBrush x:Key="insetBg" Color="#242427" />
+					<SolidColorBrush x:Key="hairline" Color="#3A3A3E" />
+					<SolidColorBrush x:Key="galleryBg" Color="#0D0D0F" />
+				</ResourceDictionary>
+				<ResourceDictionary x:Key="Light">
+					<SolidColorBrush x:Key="pageBg" Color="#F2F2F7" />
+					<SolidColorBrush x:Key="panelBg" Color="#E9E9EE" />
+					<SolidColorBrush x:Key="cardBg" Color="#FFFFFF" />
+					<SolidColorBrush x:Key="insetBg" Color="#EFEFF3" />
+					<SolidColorBrush x:Key="hairline" Color="#C8C8CD" />
+					<SolidColorBrush x:Key="galleryBg" Color="#F5F5F8" />
+				</ResourceDictionary>
+			</ResourceDictionary.ThemeDictionaries>
 		</ResourceDictionary>
 	</Application.Resources>
 </Application>

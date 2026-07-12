@@ -229,7 +229,7 @@ public sealed partial class MainWindow : Window {
 
 		Task.Run(() => {
 			foreach (Spray sp in snapshot) {
-				byte[] png = SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R);
+				byte[] png = SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R, OxyPlot.OxyColors.White);
 
 				DispatcherQueue.TryEnqueue(() => galleryView.Vm.AddCard(sp, png));
 			}
@@ -247,14 +247,14 @@ public sealed partial class MainWindow : Window {
 
 		if (importing) {
 			sprays.Add(sp);
-			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R));
+			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R, OxyPlot.OxyColors.White));
 			return;
 		}
 
 		DispatcherQueue.TryEnqueue(() => {
 			sprays.Add(sp);
 			mainView.ShowSpray(sp);
-			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R));
+			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R, OxyPlot.OxyColors.White));
 		});
 	}
 }

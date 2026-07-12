@@ -23,8 +23,10 @@ public sealed partial class ViewerView : UserControl {
 	public ViewerView() {
 		InitializeComponent();
 
-		Widgets.StepperFormat.Round(numThresh, 0.01);
+		Widgets.StepperFormat.Round(numThresh, 0.000001);
 		Widgets.StepperFormat.Round(numRecent, 1);
+		Widgets.StepperFormat.CommitOnEnter(numThresh);
+		Widgets.StepperFormat.CommitOnEnter(numRecent);
 
 		numThresh.Value = thresh;
 		numRecent.Value = recentC;

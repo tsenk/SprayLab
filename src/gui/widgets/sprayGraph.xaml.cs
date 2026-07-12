@@ -19,6 +19,7 @@ public sealed partial class SprayGraph : UserControl {
 		InitializeComponent();
 
 		SizeChanged += (s, e) => render();
+		ActualThemeChanged += (s, e) => render();
 	}
 
 	public void Show(IReadOnlyList<Bullet> shown, IReadOnlyList<Delta> mistakes, IReadOnlyList<Pos> pattern) {
@@ -35,7 +36,8 @@ public sealed partial class SprayGraph : UserControl {
 		if (w<=0 || h<=0 || bullets.Count==0)
 			return;
 
-		byte[] png = RenderPng(bullets, flagged, refPattern, w, h, DOT_R);
+		OxyColor numColor = ActualTheme==Microsoft.UI.Xaml.ElementTheme.Light ? OxyColors.Black : OxyColors.White;
+		byte[] png = RenderPng(bullets, flagged, refPattern, w, h, DOT_R, numColor);
 
 		using var ms = new MemoryStream(png);
 		var bmp = new BitmapImage();
@@ -46,7 +48,7 @@ public sealed partial class SprayGraph : UserControl {
 
 	// pure model build and export, safe off the ui thread, thumbnails pass dotR 3 and no mistakes
 	// the full pattern always draws so scaling holds across spray lengths
-	public static byte[] RenderPng(IReadOnlyList<Bullet> bullets, IReadOnlyList<Delta> flagged, IReadOnlyList<Pos> refPattern, int w, int h, int dotR) {
+	public static byte[] RenderPng(IReadOnlyList<Bullet> bullets, IReadOnlyList<Delta> flagged, IReadOnlyList<Pos> refPattern, int w, int h, int dotR, OxyColor numColor) {
 		float xMin = float.MaxValue;
 		float xMax = float.MinValue;
 		float yMin = float.MaxValue;
@@ -95,7 +97,7 @@ public sealed partial class SprayGraph : UserControl {
 			model.Annotations.Add(new TextAnnotation {
 				Text = shownNum.ToString(),
 				TextPosition = new DataPoint(b.Actual.X-12/scaleX, b.Actual.Y),
-				TextColor = OxyColors.White,
+				TextColor = numColor,
 				FontSize = 12,
 				StrokeThickness = 0,
 			});
@@ -110,8 +112,9 @@ public sealed partial class SprayGraph : UserControl {
 		foreach (Bullet b in bullets)
 			actualSeries.Points.Add(new ScatterPoint(b.Actual.X, b.Actual.Y));
 
-		model.Series.Add(refSeries);
+		// ref on top so bullet 1 of the pattern stays visible at the shared 0,0 start
 		model.Series.Add(actualSeries);
+		model.Series.Add(refSeries);
 
 		var exporter = new OxyPlot.SkiaSharp.PngExporter { Width = w, Height = h };
 		using var ms = new MemoryStream();

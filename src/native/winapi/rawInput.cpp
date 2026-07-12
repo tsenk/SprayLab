@@ -52,8 +52,13 @@ static LRESULT CALLBACK wndProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
 
 	if (m.usButtonFlags&RI_MOUSE_LEFT_BUTTON_UP) {
 		Spray sp;
-		if (captureEnd(t, sp))
-			abiCaptureDone(sp);
+		if (captureEnd(t, sp)) {
+			// a click that focused us began while another window was foreground, drop it
+			DWORD fgPid = 0;
+			GetWindowThreadProcessId(GetForegroundWindow(), &fgPid);
+			if (fgPid!=GetCurrentProcessId())
+				abiCaptureDone(sp);
+		}
 	}
 
 	return 0;

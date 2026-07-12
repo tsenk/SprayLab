@@ -23,11 +23,12 @@ public sealed partial class GalleryView : UserControl {
 	}
 
 	void onSelectDay(object sender, RoutedEventArgs e) {
-		if ((sender as Button)?.Tag is not DayGroup day)
+		if (sender is not CheckBox box || box.Tag is not DayGroup day)
 			return;
 
+		bool check = box.IsChecked==true;
 		foreach (Widgets.SprayCard card in day.Cards)
-			card.SetChecked(true);
+			card.SetChecked(check);
 	}
 
 	void onDeleteSelected(object sender, RoutedEventArgs e) {

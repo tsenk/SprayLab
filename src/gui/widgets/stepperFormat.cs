@@ -12,4 +12,15 @@ public static class StepperFormat {
 			NumberRounder = new IncrementNumberRounder { Increment = increment, RoundingAlgorithm = RoundingAlgorithm.RoundHalfUp },
 		};
 	}
+
+	// numberbox only evaluates on focus loss, enter should submit too
+	public static void CommitOnEnter(NumberBox box) {
+		box.KeyDown += (s, e) => {
+			if (e.Key!=Windows.System.VirtualKey.Enter)
+				return;
+
+			if (double.TryParse(box.Text, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out double v) || double.TryParse(box.Text, out v))
+				box.Value = v;
+		};
+	}
 }
