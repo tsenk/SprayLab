@@ -105,6 +105,23 @@ SL_API int slPeriodAvg(int weapon, int n, Bullet* out, int cap) {
 	return c;
 }
 
+SL_API int slWeaponRef(int weapon, int* shotIntv, Pos* pattern, int cap) {
+	const WeaponRef* wref = weaponRef(Weapon(weapon));
+	if (!wref)
+		return 0;
+
+	*shotIntv = wref->shotIntv;
+
+	int n = int(wref->pattern.size());
+	if (n>cap)
+		n = cap;
+
+	for (int i = 0; i<n; i++)
+		pattern[i] = wref->pattern[i];
+
+	return n;
+}
+
 // fires on the capture thread, the callback must copy before returning
 void abiCaptureDone(Spray& sp) {
 	const WeaponRef* wref = weaponRef(sp.weapon);

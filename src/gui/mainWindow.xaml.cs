@@ -2,6 +2,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.UI.Xaml;
 using SprayLab.Bindings;
+using SprayLab.Config;
 using SprayLab.Widgets;
 
 namespace SprayLab;
@@ -58,6 +59,20 @@ public sealed partial class MainWindow : Window {
 		var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 		double scale = GetDpiForWindow(hwnd)/96.0;
 		AppWindow.ResizeClient(new Windows.Graphics.SizeInt32((int)(1100*scale), (int)(700*scale)));
+
+		var presenter = (Microsoft.UI.Windowing.OverlappedPresenter)AppWindow.Presenter;
+		presenter.IsResizable = false;
+		presenter.IsMaximizable = false;
+
+		applyTheme();
+
+		// a fullscreen game keeps the window occluded, repaint whatever is current when it comes back
+		Activated += (s, e) => {
+			if (e.WindowActivationState!=WindowActivationState.Deactivated) {
+				mainView.Rerender();
+				viewerView.Rerender();
+			}
+		};
 
 		mainView.GalleryRequested += () => showView(galleryView);
 		mainView.ImportRequested += importSprays;
@@ -119,6 +134,20 @@ public sealed partial class MainWindow : Window {
 		prerenderCards();
 
 		Abi.slRegisterCapture();
+	}
+
+	void onTheme(object sender, RoutedEventArgs e) {
+		CfgStore.Cur.ClrScheme = CfgStore.Cur.ClrScheme==ClrScheme.Dark ? ClrScheme.Light : ClrScheme.Dark;
+		CfgStore.Save();
+
+		applyTheme();
+	}
+
+	void applyTheme() {
+		bool dark = CfgStore.Cur.ClrScheme==ClrScheme.Dark;
+
+		root.RequestedTheme = dark ? ElementTheme.Dark : ElementTheme.Light;
+		iconTheme.Glyph = dark ? "" : "";
 	}
 
 	void showView(UIElement view) {
@@ -200,7 +229,7 @@ public sealed partial class MainWindow : Window {
 
 		Task.Run(() => {
 			foreach (Spray sp in snapshot) {
-				byte[] png = SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), THUMB_W, THUMB_H, THUMB_DOT_R);
+				byte[] png = SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R);
 
 				DispatcherQueue.TryEnqueue(() => galleryView.Vm.AddCard(sp, png));
 			}
@@ -218,16 +247,14 @@ public sealed partial class MainWindow : Window {
 
 		if (importing) {
 			sprays.Add(sp);
-			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), THUMB_W, THUMB_H, THUMB_DOT_R));
+			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R));
 			return;
 		}
-
-		byte[] png = SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), THUMB_W, THUMB_H, THUMB_DOT_R);
 
 		DispatcherQueue.TryEnqueue(() => {
 			sprays.Add(sp);
 			mainView.ShowSpray(sp);
-			galleryView.Vm.AddCard(sp, png);
+			galleryView.Vm.AddCard(sp, SprayGraph.RenderPng(sp.Bullets, Array.Empty<Delta>(), Abi.WeaponPattern(sp.Weapon), THUMB_W, THUMB_H, THUMB_DOT_R));
 		});
 	}
 }

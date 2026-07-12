@@ -22,6 +22,14 @@ public sealed partial class GalleryView : UserControl {
 		BackRequested?.Invoke();
 	}
 
+	void onSelectDay(object sender, RoutedEventArgs e) {
+		if ((sender as Button)?.Tag is not DayGroup day)
+			return;
+
+		foreach (Widgets.SprayCard card in day.Cards)
+			card.SetChecked(true);
+	}
+
 	void onDeleteSelected(object sender, RoutedEventArgs e) {
 		var checkedCards = Vm.CheckedCards();
 		if (checkedCards.Count>0)

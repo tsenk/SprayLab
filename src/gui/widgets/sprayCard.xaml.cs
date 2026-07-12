@@ -15,6 +15,7 @@ public sealed partial class SprayCard : UserControl {
 	public event Action<Spray>? OpenRequested;
 	public event Action<SprayCard>? DeleteRequested;
 	public event Action<SprayCard, string>? RenameRequested;
+	public event Action<SprayCard>? BodyClicked;
 
 	public SprayCard(Spray sp, byte[] thumbPng) {
 		InitializeComponent();
@@ -30,6 +31,22 @@ public sealed partial class SprayCard : UserControl {
 
 	public void ApplyName(string name) {
 		txtName.Text = name;
+	}
+
+	public void SetChecked(bool value) {
+		chk.IsChecked = value;
+	}
+
+	void onBody(object sender, PointerRoutedEventArgs e) {
+		var at = e.OriginalSource as DependencyObject;
+		while (at!=null && at!=this) {
+			if (at is Button || at is CheckBox || at is TextBox)
+				return;
+
+			at = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(at);
+		}
+
+		BodyClicked?.Invoke(this);
 	}
 
 	void onOpen(object sender, RoutedEventArgs e) {

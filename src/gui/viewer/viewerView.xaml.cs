@@ -23,8 +23,16 @@ public sealed partial class ViewerView : UserControl {
 	public ViewerView() {
 		InitializeComponent();
 
+		Widgets.StepperFormat.Round(numThresh, 0.01);
+		Widgets.StepperFormat.Round(numRecent, 1);
+
 		numThresh.Value = thresh;
 		numRecent.Value = recentC;
+	}
+
+	public void Rerender() {
+		if (current!=null)
+			Show(current);
 	}
 
 	public void Show(Spray sp) {
@@ -44,11 +52,16 @@ public sealed partial class ViewerView : UserControl {
 		var buf = new Abi.SlBullet[64];
 		int c = Abi.slPeriodAvg((int)current.Weapon, recentC, buf, buf.Length);
 
+		// pattern slots past the longest spray come back zero filled, they are not bullets
 		var bullets = new List<Bullet>();
-		for (int i = 0; i<c; i++)
-			bullets.Add(new Bullet { Num = buf[i].Num, Actual = buf[i].Actual, Ref = buf[i].Ref });
+		for (int i = 0; i<c; i++) {
+			if (i>0 && buf[i].Actual.X==0 && buf[i].Actual.Y==0)
+				continue;
 
-		avgGraph.Show(bullets, Array.Empty<Delta>());
+			bullets.Add(new Bullet { Num = buf[i].Num, Actual = buf[i].Actual, Ref = buf[i].Ref });
+		}
+
+		avgGraph.Show(bullets, Array.Empty<Delta>(), Abi.WeaponPattern(current.Weapon));
 	}
 
 	void onRecentChanged(NumberBox sender, NumberBoxValueChangedEventArgs e) {
@@ -71,7 +84,7 @@ public sealed partial class ViewerView : UserControl {
 		var flagged = Threshold.Flag(current.Deltas, thresh);
 
 		mistakes.Show(flagged);
-		graph.Show(current.Bullets, flagged);
+		graph.Show(current.Bullets, flagged, Abi.WeaponPattern(current.Weapon));
 	}
 
 	void onApply(object sender, RoutedEventArgs e) {

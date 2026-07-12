@@ -24,11 +24,11 @@
 
 			<Grid Grid.Row="2" Margin="0,12,0,0">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				<TextBlock Grid.Column="0" Text="Latest Sprays for comparison" FontSize="12" VerticalAlignment="Center" />
-				<NumberBox Grid.Column="1" x:Name="numRecent" Width="90" SpinButtonPlacementMode="Compact" Minimum="1" SmallChange="1" ValueChanged="onRecentChanged" />
+				<NumberBox Grid.Column="1" x:Name="numRecent" MinWidth="70" HorizontalAlignment="Right" Margin="8,0,0,0" SpinButtonPlacementMode="Compact" Minimum="1" SmallChange="1" ValueChanged="onRecentChanged" />
 			</Grid>
 		</Grid>
 

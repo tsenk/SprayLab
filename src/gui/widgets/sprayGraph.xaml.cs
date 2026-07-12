@@ -13,6 +13,7 @@ public sealed partial class SprayGraph : UserControl {
 
 	IReadOnlyList<Bullet> bullets = Array.Empty<Bullet>();
 	IReadOnlyList<Delta> flagged = Array.Empty<Delta>();
+	IReadOnlyList<Pos> refPattern = Array.Empty<Pos>();
 
 	public SprayGraph() {
 		InitializeComponent();
@@ -20,9 +21,10 @@ public sealed partial class SprayGraph : UserControl {
 		SizeChanged += (s, e) => render();
 	}
 
-	public void Show(IReadOnlyList<Bullet> shown, IReadOnlyList<Delta> mistakes) {
+	public void Show(IReadOnlyList<Bullet> shown, IReadOnlyList<Delta> mistakes, IReadOnlyList<Pos> pattern) {
 		bullets = shown;
 		flagged = mistakes;
+		refPattern = pattern;
 
 		render();
 	}
@@ -33,7 +35,7 @@ public sealed partial class SprayGraph : UserControl {
 		if (w<=0 || h<=0 || bullets.Count==0)
 			return;
 
-		byte[] png = RenderPng(bullets, flagged, w, h, DOT_R);
+		byte[] png = RenderPng(bullets, flagged, refPattern, w, h, DOT_R);
 
 		using var ms = new MemoryStream(png);
 		var bmp = new BitmapImage();
@@ -43,16 +45,23 @@ public sealed partial class SprayGraph : UserControl {
 	}
 
 	// pure model build and export, safe off the ui thread, thumbnails pass dotR 3 and no mistakes
-	public static byte[] RenderPng(IReadOnlyList<Bullet> bullets, IReadOnlyList<Delta> flagged, int w, int h, int dotR) {
+	// the full pattern always draws so scaling holds across spray lengths
+	public static byte[] RenderPng(IReadOnlyList<Bullet> bullets, IReadOnlyList<Delta> flagged, IReadOnlyList<Pos> refPattern, int w, int h, int dotR) {
 		float xMin = float.MaxValue;
 		float xMax = float.MinValue;
 		float yMin = float.MaxValue;
 		float yMax = float.MinValue;
 		foreach (Bullet b in bullets) {
-			xMin = MathF.Min(xMin, MathF.Min(b.Actual.X, b.Ref.X));
-			xMax = MathF.Max(xMax, MathF.Max(b.Actual.X, b.Ref.X));
-			yMin = MathF.Min(yMin, MathF.Min(b.Actual.Y, b.Ref.Y));
-			yMax = MathF.Max(yMax, MathF.Max(b.Actual.Y, b.Ref.Y));
+			xMin = MathF.Min(xMin, b.Actual.X);
+			xMax = MathF.Max(xMax, b.Actual.X);
+			yMin = MathF.Min(yMin, b.Actual.Y);
+			yMax = MathF.Max(yMax, b.Actual.Y);
+		}
+		foreach (Pos p in refPattern) {
+			xMin = MathF.Min(xMin, p.X);
+			xMax = MathF.Max(xMax, p.X);
+			yMin = MathF.Min(yMin, p.Y);
+			yMax = MathF.Max(yMax, p.Y);
 		}
 
 		float xPad = MathF.Max((xMax-xMin)*0.1f, 0.5f);
@@ -94,11 +103,12 @@ public sealed partial class SprayGraph : UserControl {
 		}
 
 		var refSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = dotR, MarkerFill = OxyColor.FromRgb(0x34, 0xC7, 0x59) };
+		foreach (Pos p in refPattern)
+			refSeries.Points.Add(new ScatterPoint(p.X, p.Y));
+
 		var actualSeries = new ScatterSeries { MarkerType = MarkerType.Circle, MarkerSize = dotR, MarkerFill = OxyColor.FromRgb(0x29, 0x62, 0xFF) };
-		foreach (Bullet b in bullets) {
-			refSeries.Points.Add(new ScatterPoint(b.Ref.X, b.Ref.Y));
+		foreach (Bullet b in bullets)
 			actualSeries.Points.Add(new ScatterPoint(b.Actual.X, b.Actual.Y));
-		}
 
 		model.Series.Add(refSeries);
 		model.Series.Add(actualSeries);

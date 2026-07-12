@@ -53,6 +53,27 @@ internal static class Abi {
 	internal static extern int slPeriodAvg(int weapon, int n, [Out] SlBullet[] outAvg, int cap);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
+	internal static extern int slWeaponRef(int weapon, ref int shotIntv, [Out] Pos[] pattern, int cap);
+
+	static readonly Dictionary<Weapon, Pos[]> patterns = new();
+
+	// full pattern backs every graph so the scale never depends on spray length
+	internal static Pos[] WeaponPattern(Weapon weapon) {
+		lock (patterns) {
+			if (patterns.TryGetValue(weapon, out var known))
+				return known;
+
+			int intv = 0;
+			var buf = new Pos[64];
+			int n = slWeaponRef((int)weapon, ref intv, buf, buf.Length);
+
+			var pattern = buf[..n];
+			patterns[weapon] = pattern;
+			return pattern;
+		}
+	}
+
+	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]
 	internal static extern int slSetWeapon(int weapon);
 
 	[DllImport("slnative", CallingConvention = CallingConvention.Cdecl)]

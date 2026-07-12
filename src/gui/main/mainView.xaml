@@ -41,31 +41,31 @@
 
 			<Grid Grid.Row="2" Margin="0,0,0,16">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
 				</Grid.ColumnDefinitions>
 				<TextBlock Grid.Column="0" Text="Ignore mistake threshold (deg)" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap" MaxWidth="110" />
-				<NumberBox Grid.Column="1" x:Name="numThresh" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" VerticalAlignment="Center" />
+				<NumberBox Grid.Column="1" x:Name="numThresh" MinWidth="90" HorizontalAlignment="Right" Margin="8,0,0,0" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" VerticalAlignment="Center" />
 				<Button Grid.Column="2" x:Name="btnApply" Content="Apply" Margin="8,0,0,0" Style="{StaticResource AccentButtonStyle}" Click="onApply" VerticalAlignment="Center" />
 			</Grid>
 
 			<Grid Grid.Row="3" Margin="0,0,0,16">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				<TextBlock Grid.Column="0" Text="ING sensitivity" FontSize="13" VerticalAlignment="Center" />
-				<NumberBox Grid.Column="1" x:Name="numSens" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" ValueChanged="onSensChanged" />
+				<NumberBox Grid.Column="1" x:Name="numSens" MinWidth="90" HorizontalAlignment="Right" Margin="8,0,0,0" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.1" ValueChanged="onSensChanged" />
 			</Grid>
 
 			<Grid Grid.Row="4" Margin="0,0,0,16">
 				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
 					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 				<TextBlock Grid.Column="0" Text="m_yaw" FontSize="13" VerticalAlignment="Center" />
-				<NumberBox Grid.Column="1" x:Name="numMYaw" Width="90" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.001" ValueChanged="onMYawChanged" />
+				<NumberBox Grid.Column="1" x:Name="numMYaw" MinWidth="90" HorizontalAlignment="Right" Margin="8,0,0,0" SpinButtonPlacementMode="Compact" Minimum="0" SmallChange="0.001" ValueChanged="onMYawChanged" />
 			</Grid>
 
 			<TextBlock Grid.Row="5" x:Name="txtWarning" Text="Sprays are not recorded until in-game sensitivity, m_yaw and weapon are set." FontSize="12" Foreground="#FF9F0A" TextWrapping="Wrap" />

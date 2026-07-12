@@ -14,11 +14,14 @@
 				<ItemsControl.ItemTemplate>
 					<DataTemplate x:DataType="gallery:DayGroup">
 						<StackPanel>
-							<StackPanel HorizontalAlignment="Center" Margin="0,14,0,10" Width="140">
-								<TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center" />
-								<Rectangle Height="1" Fill="#3A3A3E" Margin="0,6,0,0" />
-							</StackPanel>
-							<GridView ItemsSource="{x:Bind Cards}" SelectionMode="None" IsItemClickEnabled="False" />
+							<Grid Margin="0,14,0,10">
+								<StackPanel HorizontalAlignment="Center" Width="140">
+									<TextBlock Text="{x:Bind Title, Mode=OneWay}" FontSize="14" HorizontalAlignment="Center" />
+									<Rectangle Height="1" Fill="#3A3A3E" Margin="0,6,0,0" />
+								</StackPanel>
+								<Button Content="Select all" FontSize="11" Padding="10,4" HorizontalAlignment="Right" Tag="{x:Bind}" Click="onSelectDay" />
+							</Grid>
+							<GridView ItemsSource="{x:Bind Cards}" SelectionMode="None" IsItemClickEnabled="False" HorizontalAlignment="Center" />
 						</StackPanel>
 					</DataTemplate>
 				</ItemsControl.ItemTemplate>

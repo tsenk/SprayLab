@@ -29,6 +29,11 @@ public sealed partial class MainView : UserControl {
 		cmbCapture.SelectedIndex = vm.CaptureMode;
 		cmbWeapon.ItemsSource = WEAPON_NAMES;
 		cmbWeapon.SelectedIndex = 0;
+
+		Widgets.StepperFormat.Round(numThresh, 0.01);
+		Widgets.StepperFormat.Round(numSens, 0.001);
+		Widgets.StepperFormat.Round(numMYaw, 0.000001);
+
 		numMYaw.Value = Math.Round(vm.MYaw, 6);
 		numThresh.Value = vm.Thresh;
 		numSens.Value = float.IsNaN(vm.Sens) ? double.NaN : Math.Round(vm.Sens, 6);
@@ -41,6 +46,10 @@ public sealed partial class MainView : UserControl {
 
 	public void ShowSpray(Spray sp) {
 		vm.LastSpray = sp;
+	}
+
+	public void Rerender() {
+		onSprayChanged();
 	}
 
 	void onSprayChanged() {
@@ -61,7 +70,7 @@ public sealed partial class MainView : UserControl {
 		var flagged = Threshold.Flag(vm.LastSpray.Deltas, vm.Thresh);
 
 		mistakes.Show(flagged);
-		graph.Show(vm.LastSpray.Bullets, flagged);
+		graph.Show(vm.LastSpray.Bullets, flagged, Abi.WeaponPattern(vm.LastSpray.Weapon));
 	}
 
 	void arm() {
@@ -74,7 +83,15 @@ public sealed partial class MainView : UserControl {
 		} else
 			Abi.slSetWeapon(-1);
 
-		txtWarning.Visibility = armed==1 ? Visibility.Collapsed : Visibility.Visible;
+		if (armed==1) {
+			txtWarning.Visibility = Visibility.Collapsed;
+			return;
+		}
+
+		txtWarning.Text = valid
+			? "No reference pattern for this weapon yet, capture disabled."
+			: "Sprays are not recorded until in-game sensitivity, m_yaw and weapon are set.";
+		txtWarning.Visibility = Visibility.Visible;
 	}
 
 	void onApply(object sender, RoutedEventArgs e) {

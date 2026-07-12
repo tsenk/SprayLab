@@ -75,6 +75,12 @@ public class GalleryViewModel {
 		card.DeleteRequested += c => DeleteRequested?.Invoke(c);
 		card.RenameRequested += (c, name) => RenameRequested?.Invoke(c, name);
 
+		// once a selection exists the whole card body toggles it
+		card.BodyClicked += c => {
+			if (CheckedCards().Count>0)
+				c.SetChecked(!c.Checked);
+		};
+
 		DateTime day = DateTimeOffset.FromUnixTimeSeconds(sp.Epoch).ToLocalTime().Date;
 
 		DayGroup? group = Days.FirstOrDefault(g => g.Day==day);
